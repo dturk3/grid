@@ -69,9 +69,10 @@
     margin-right: 10px;
 }
 #location {
+    margin-top: 5px;
     color: #8baebe;
     font-family: Alexandria;
-    font-size: 20px;
+    font-size: 16px;
     color: rgba(244, 244, 244, 0.6);
     text-shadow: 2px 2px 3px rgba(255, 255, 255, 0.1);
 }
@@ -139,7 +140,7 @@ a:hover {
     position: static;
     cursor: default;
     opacity: 1;
-    margin-top: 5px;
+    margin-top: 10px;
     padding: 6px 10px;
     overflow: visible;
     border: none;
@@ -172,7 +173,7 @@ a:hover {
     position: static;
     cursor: default;
     opacity: 1;
-    margin-top: 5px;
+    margin-top: 10px;
     padding: 6px 10px;
     overflow: visible;
     border: none;
@@ -205,7 +206,7 @@ a:hover {
     position: static;
     cursor: default;
     opacity: 1;
-    margin-top: 5px;
+    margin-top: 10px;
     padding: 6px 10px;
     overflow: visible;
     border: none;
@@ -297,13 +298,18 @@ a:hover {
 #logo {
     float: right;
     font-family: Frente;
-    font-size: 32px;
-    margin-right: 10px;
+    font-size: 22px;
     color: #fff;
     position: absolute;
-    top: 1;
+    top: 0;
     right: 0;
     z-index: 500;
+    margin-right: -25px;
+}
+#logo img {
+    display: inline-block;
+    width: 40%;
+    height: 40%;
 }
 /* popup */
 

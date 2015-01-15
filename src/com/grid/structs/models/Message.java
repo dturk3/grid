@@ -1,5 +1,7 @@
 package com.grid.structs.models;
 
+import java.io.Serializable;
+
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,7 +10,9 @@ import com.google.common.base.Preconditions;
 import com.grid.structs.geo.Point2D;
 import com.ocpsoft.pretty.time.PrettyTime;
 
-public class Message {
+public class Message implements Serializable {
+	private static final long serialVersionUID = 347005633489602376L;
+	
 	private final String mPublisher;
 	private final String mMessage;
 	private final Point2D mLocation;

@@ -5,7 +5,7 @@ import com.grid.structs.geo.Interval2D;
 import com.grid.structs.geo.Point2D;
 
 public class Environment {
-	private static final double RANGE = 0.0015;
+	private static final double RANGE = 0.1000;
 	
 	private final Point2D mLocation;
 	private final Interval2D mArea;

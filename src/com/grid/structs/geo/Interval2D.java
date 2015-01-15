@@ -1,5 +1,7 @@
 package com.grid.structs.geo;
 
+import java.io.Serializable;
+
 
 
 /**
@@ -16,7 +18,9 @@ package com.grid.structs.geo;
  * @author Robert Sedgewick
  * @author Kevin Wayne
  */
-public class Interval2D {
+public class Interval2D implements Serializable {
+
+	private static final long serialVersionUID = -1612553911265772407L;
 	private final Interval1D x;
 	private final Interval1D y;
 

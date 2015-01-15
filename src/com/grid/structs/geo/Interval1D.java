@@ -1,5 +1,6 @@
 package com.grid.structs.geo;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -14,9 +15,11 @@ import java.util.Comparator;
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public class Interval1D {
+public class Interval1D implements Serializable {
+	
+	private static final long serialVersionUID = -4666597566159562603L;
 
-    /**
+	/**
      * Compares two intervals by left endpoint.
      */
     public static final Comparator<Interval1D> LEFT_ENDPOINT_ORDER  = new LeftComparator();

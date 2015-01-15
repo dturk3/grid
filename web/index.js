@@ -43,7 +43,6 @@ function initialize() {
         $('#chhandle').val(window.handle);
     }
     geoLocate();
-    console.log(map);
 
     google.maps.event.trigger(map, "resize");
     map.setZoom(15);
@@ -121,7 +120,6 @@ function geoLocate() {
                 }, function (results, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
                         if (results[1]) {
-                            console.log(results[1]);
                             var component = results[1].address_components[0];
                             if (results[1].address_components.length > 1) {
                                 component = results[1].address_components[1];
@@ -132,11 +130,9 @@ function geoLocate() {
                 });
                 window.name = pos;
                 coords = pos || computeCoords();
-                console.log(coords);
                 $('#coords').html(coords.k + ',' + coords.D);
                 map.setCenter(new google.maps.LatLng(coords.k,
                     coords.D), 13);
-                console.log($('.submitbtn'));
                 $('.submitbtn').click(sendMessage);
                 $('.entry').keyup(function (e) {
                     if (e.keyCode == 13) {

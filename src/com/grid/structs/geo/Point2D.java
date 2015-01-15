@@ -1,5 +1,6 @@
 package com.grid.structs.geo;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -16,7 +17,9 @@ import java.util.Comparator;
  * @author Robert Sedgewick
  * @author Kevin Wayne
  */
-public class Point2D implements Comparable<Point2D> {
+public class Point2D implements Comparable<Point2D>, Serializable {
+	
+	private static final long serialVersionUID = -5667561667500344407L;
 
 	/**
 	 * Compares two points by x-coordinate.
