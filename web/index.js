@@ -73,6 +73,13 @@ function refreshFeed() {
         var text = xhr.responseText;
         var feedObject = JSON.parse(text);
         feedObject.feed.reverse();
+        if (feedObject.feed.length < 1) {
+            var feedHtml = $('#emptyfeedtemplate').html();
+            $('#feed').html('');
+            $('#feed').append(feedHtml);
+            return;
+        }
+
         $('#feed').html('');
         feedObject.feed.forEach(function (entry) {
             entry = JSON.parse(entry);

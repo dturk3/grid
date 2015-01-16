@@ -2,17 +2,20 @@ package com.grid.structs.geo;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 
 public class QuadTree<Key extends Comparable<Key>, Value> implements Serializable {
 	private static final long serialVersionUID = -2059257062284519390L;
 	
 	private Node root;
+	private final Set<Node> mAllNodes = Sets.newHashSet();
 
     // helper node data type
-    private class Node implements Serializable {
+    public class Node implements Serializable {
     	private static final long serialVersionUID = -237886367153852095L;
 		Double x, y;              // x- and y- coordinates
         Node NW, NE, SE, SW;   // four subtrees
@@ -27,6 +30,29 @@ public class QuadTree<Key extends Comparable<Key>, Value> implements Serializabl
         public void add(Value value) {
         	values.add(value);
         }
+        
+        public Double getX() {
+        	return x;
+        }
+        
+        public Double getY() {
+        	return y;
+        }
+        public List<Value> getValues() {
+        	return values;
+        }
+               
+//        @Override
+//        public boolean equals(Object obj) {
+//        	if (obj == null) {
+//        		return false;
+//        	}
+//        	if (!Node.class.equals(obj.getClass())) {
+//        		return false;
+//        	}
+//        	Node other = (Node) obj; 
+//        	return getX().equals(other.getX()) && getY().equals(other.getY()) && getValues().equals(other.getValues());
+//        }
     }
 
 
@@ -35,6 +61,7 @@ public class QuadTree<Key extends Comparable<Key>, Value> implements Serializabl
     ***********************************************************************/
     public void insert(Double x, Double y, Value value) {
         root = insert(root, x, y, value);
+        mAllNodes.add(root);
     }
 
     private Node insert(Node h, Double x, Double y, Value value) {
@@ -80,4 +107,8 @@ public class QuadTree<Key extends Comparable<Key>, Value> implements Serializabl
 
     private boolean less(Double k1, Double k2) { return k1.compareTo(k2) <  0; }
     private boolean eq(Double k1, Double k2) { return k1.compareTo(k2) == 0; }
+    
+    public Set<Node> getNodes() {
+    	return mAllNodes;
+	}
 }

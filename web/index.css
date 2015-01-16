@@ -311,6 +311,22 @@ a:hover {
     width: 40%;
     height: 40%;
 }
+#emptyfeedtemplate {
+    display: none;
+}
+#emptyfeed {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50%;
+    width: 64px;
+    height: 65px;
+}
+.emptyhere {
+    font-family: Frente;
+    text-align: center;
+    font-size: 32px;
+}
 /* popup */
 
 .popBox-holder {

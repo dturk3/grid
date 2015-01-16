@@ -218,7 +218,9 @@ public class Point2D implements Comparable<Point2D>, Serializable {
 	}
 
 	// compare points according to their x-coordinate
-	private static class XOrder implements Comparator<Point2D> {
+	private static class XOrder implements Comparator<Point2D>, Serializable {
+		private static final long serialVersionUID = 748655571466522638L;
+
 		public int compare(Point2D p, Point2D q) {
 			if (p.x < q.x)
 				return -1;
@@ -229,7 +231,9 @@ public class Point2D implements Comparable<Point2D>, Serializable {
 	}
 
 	// compare points according to their y-coordinate
-	private static class YOrder implements Comparator<Point2D> {
+	private static class YOrder implements Comparator<Point2D>, Serializable {
+		private static final long serialVersionUID = 2487439335980950992L;
+
 		public int compare(Point2D p, Point2D q) {
 			if (p.y < q.y)
 				return -1;
@@ -240,7 +244,9 @@ public class Point2D implements Comparable<Point2D>, Serializable {
 	}
 
 	// compare points according to their polar radius
-	private static class ROrder implements Comparator<Point2D> {
+	private static class ROrder implements Comparator<Point2D>, Serializable {
+		private static final long serialVersionUID = -6043009987222519392L;
+
 		public int compare(Point2D p, Point2D q) {
 			double delta = (p.x * p.x + p.y * p.y) - (q.x * q.x + q.y * q.y);
 			if (delta < 0)
@@ -253,7 +259,9 @@ public class Point2D implements Comparable<Point2D>, Serializable {
 
 	// compare other points relative to atan2 angle (bewteen -pi/2 and pi/2)
 	// they make with this Point
-	private class Atan2Order implements Comparator<Point2D> {
+	private class Atan2Order implements Comparator<Point2D>, Serializable {
+		private static final long serialVersionUID = -2637574226894544404L;
+
 		public int compare(Point2D q1, Point2D q2) {
 			double angle1 = angleTo(q1);
 			double angle2 = angleTo(q2);
@@ -268,7 +276,9 @@ public class Point2D implements Comparable<Point2D>, Serializable {
 
 	// compare other points relative to polar angle (between 0 and 2pi) they
 	// make with this Point
-	private class PolarOrder implements Comparator<Point2D> {
+	private class PolarOrder implements Comparator<Point2D>, Serializable {
+		private static final long serialVersionUID = -8410850825613852154L;
+
 		public int compare(Point2D q1, Point2D q2) {
 			double dx1 = q1.x - x;
 			double dy1 = q1.y - y;
@@ -294,7 +304,9 @@ public class Point2D implements Comparable<Point2D>, Serializable {
 	}
 
 	// compare points according to their distance to this point
-	private class DistanceToOrder implements Comparator<Point2D> {
+	private class DistanceToOrder implements Comparator<Point2D>, Serializable {
+		private static final long serialVersionUID = 1404891902799568804L;
+
 		public int compare(Point2D p, Point2D q) {
 			double dist1 = distanceSquaredTo(p);
 			double dist2 = distanceSquaredTo(q);

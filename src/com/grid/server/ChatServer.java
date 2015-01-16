@@ -28,7 +28,7 @@ public class ChatServer {
 
     public static void main(String[] args) throws Exception {
     	mWorld = new World();
-        final Server server = new Server(8080);
+        final Server server = new Server(80);
         
         final ServletHandler servletHandler = new ServletHandler();
         servletHandler.addServletWithMapping(MessageServlet.class, "/messages");
