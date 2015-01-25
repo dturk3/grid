@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.Set;
 
 import com.grid.structs.geo.Interval1D;
 import com.grid.structs.geo.Interval2D;
@@ -22,7 +21,7 @@ public class World {
 	private final QuadTree<Double, Message> mMessages;
 	
 	public World() throws IOException {
-		mMessages = tryRestoreTree();
+		mMessages = tryRestoreTree(FSYNC_FILENAME);
 		startFsyncThread();
 	}
 	
@@ -44,7 +43,7 @@ public class World {
 					ObjectOutputStream stream = null;
 					try {
 						stream = new ObjectOutputStream(new FileOutputStream(FSYNC_FILENAME));
-						stream.writeObject(mMessages.getNodes());
+						stream.writeObject(mMessages.getValues());
 						Thread.sleep(30000);
 					} catch (Exception e) {
 						System.out.println(e);
@@ -63,14 +62,12 @@ public class World {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private QuadTree<Double, Message> tryRestoreTree() {
+	public static QuadTree<Double, Message> tryRestoreTree(String filename) {
 		final QuadTree<Double, Message> tree = new QuadTree<Double, Message>();
 		try {
-			final Set<Node> nodes = (Set<Node>) new ObjectInputStream(new FileInputStream(FSYNC_FILENAME)).readObject();
-			for (Node node : nodes) {
-				for (Message value : (List<Message>) node.getValues()) {
-					tree.insert(node.getX(), node.getY(), value);
-				}
+			final List<Message> msgs = (List<Message>) new ObjectInputStream(new FileInputStream(filename)).readObject();
+			for (Message msg : msgs) {
+				tree.insert(msg.getLocation().x(), msg.getLocation().y(), msg);
 			}
 			return tree;
 		}

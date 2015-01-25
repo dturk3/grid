@@ -80,7 +80,7 @@ public class Interval2D implements Serializable {
 	}
 	
 	public Interval1D getY() {
-		return this.x;
+		return this.y;
 	}
 
 	/**
