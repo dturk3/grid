@@ -1,9 +1,12 @@
 package com.grid.structs.geo;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.grid.structs.models.Message;
 
 
 public class QuadTree<Key extends Comparable<Key>, Value> implements Serializable {
@@ -43,7 +46,7 @@ public class QuadTree<Key extends Comparable<Key>, Value> implements Serializabl
         public Value getValue() {
         	return values.get(values.size() - 1);
         }
-               
+        
 //        @Override
 //        public boolean equals(Object obj) {
 //        	if (obj == null) {
@@ -84,6 +87,20 @@ public class QuadTree<Key extends Comparable<Key>, Value> implements Serializabl
     public List<Value> query2D(Interval2D rect) {
     	final List<Value> results = Lists.newArrayList();
         query2D(root, rect, results);
+        Collections.sort(results, new Comparator<Value>() {
+			@Override
+			public int compare(Value o1, Value o2) {
+				final Message m1 = (Message) o1;
+				final Message m2 = (Message) o2;
+				if (m1.getTimestamp().getMillis() < m2.getTimestamp().getMillis()) {
+					return -1;
+				}
+				if (m1.getTimestamp().getMillis() > m2.getTimestamp().getMillis()) {
+					return 1;
+				}
+				return 0;
+			}
+		});
         return results;
     }
 
@@ -94,7 +111,7 @@ public class QuadTree<Key extends Comparable<Key>, Value> implements Serializabl
 	        double xmax = rect.getX().right();
 	        double ymax = rect.getY().right();
 	        if (rect.contains(new Point2D(h.x, h.y))) {
-	        	results.add(h.getValue());
+	        	results.addAll(h.getValues());
 	        }
 	        if ( less(xmin, h.x) &&  less(ymin, h.y)) query2D(h.SW, rect, results);
 	        if ( less(xmin, h.x) && !less(ymax, h.y)) query2D(h.NW, rect, results);
