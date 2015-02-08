@@ -118,7 +118,6 @@ public class ChatServer {
 	            response.setStatus(HttpServletResponse.SC_OK);
 	            final JSONObject jsonResponse = new JSONObject();
 	            final List<Message> feedResponse = mWorld.feed(myEnv);
-	            feedResponse.add(Message.create("bob", "yo", new Point2D(12.5, 12.5)));
 	            jsonResponse.put("feed", feedResponse);
 				response.getWriter().println(jsonResponse.toString());
         	}
