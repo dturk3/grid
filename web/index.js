@@ -84,7 +84,11 @@ function refreshFeed() {
         feedObject.feed.forEach(function (entry) {
             entry = JSON.parse(entry);
             var feedHtml = $('#feedtemplate').html();
-            feedHtml = feedHtml.replace('{m}', entry.message);
+            if (entry.message.substr(0, 4) == 'img:') {
+                feedHtml = feedHtml.replace('{m}', '<img class="imgpost" src="' + entry.message.substr(8) + '">');
+            } else {
+                feedHtml = feedHtml.replace('{m}', entry.message);
+            }
             feedHtml = feedHtml.replace('{t}', entry.fuzzyTimestamp);
             feedHtml = feedHtml.replace('{p}', entry.publisher);
             $('#feed').append(feedHtml);

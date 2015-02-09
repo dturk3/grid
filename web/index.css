@@ -327,6 +327,10 @@ a:hover {
     text-align: center;
     font-size: 32px;
 }
+.imgpost {
+    width: 192px;
+    height: 192px;
+}
 /* popup */
 
 .popBox-holder {

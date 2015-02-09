@@ -1,18 +1,27 @@
 package com.grid.server;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.UUID;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +31,7 @@ import com.grid.structs.models.Environment;
 import com.grid.structs.models.Message;
 import com.grid.structs.models.Publisher;
 import com.grid.structs.models.World;
+import com.jogamp.common.util.IOUtil;
 
 public class ChatServer {
 	private static World mWorld;
@@ -30,10 +40,16 @@ public class ChatServer {
     	mWorld = new World();
         final Server server = new Server(80);
         
-        final ServletHandler servletHandler = new ServletHandler();
-        servletHandler.addServletWithMapping(MessageServlet.class, "/messages");
-        servletHandler.addServletWithMapping(FeedServlet.class, "/feeds");
-        servletHandler.addServletWithMapping(NameServlet.class, "/names");
+        final ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        servletHandler.setContextPath("/");
+        
+        servletHandler.addServlet(MessageServlet.class, "/messages");
+        servletHandler.addServlet(FeedServlet.class, "/feeds");
+        servletHandler.addServlet(NameServlet.class, "/names");
+        
+        final ServletHolder fileUploadServletHolder = new ServletHolder(new UploadServlet());
+        fileUploadServletHolder.getRegistration().setMultipartConfig(new MultipartConfigElement("image/png"));
+        servletHandler.addServlet(fileUploadServletHolder, "/upload");
         
         final ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed(true);
@@ -162,5 +178,34 @@ public class ChatServer {
 				throw new IllegalArgumentException(e);
 			}
 		}
+    }
+    
+    @SuppressWarnings("serial")
+    public static class UploadServlet extends BaseServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        	super.doPost(request, response);
+        	
+        	final String localFilename = String.valueOf("web/" + UUID.randomUUID() + ".png");
+        	final Path localFilePath = Files.createFile(Paths.get(localFilename));
+        	final OutputStream localFileStream = Files.newOutputStream(localFilePath, StandardOpenOption.APPEND);
+        	
+            for (Part requestPart : request.getParts()) {
+        		IOUtil.copyStream2Stream(requestPart.getInputStream(), localFileStream, requestPart.getInputStream().available());
+			}
+            
+            localFileStream.close();
+
+            final JSONObject jsonResponse = new JSONObject();
+            try {
+            	jsonResponse.put("img", localFilename);
+            }
+            catch (JSONException je) {
+            	throw new IllegalStateException(je); 
+            }
+            
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            response.getWriter().println(jsonResponse);
+        }
     }
 }
