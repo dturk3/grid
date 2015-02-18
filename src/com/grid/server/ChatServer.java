@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -31,7 +32,6 @@ import com.grid.structs.models.Environment;
 import com.grid.structs.models.Message;
 import com.grid.structs.models.Publisher;
 import com.grid.structs.models.World;
-import com.jogamp.common.util.IOUtil;
 
 public class ChatServer {
 	private static World mWorld;
@@ -191,7 +191,7 @@ public class ChatServer {
         	final OutputStream localFileStream = Files.newOutputStream(localFilePath, StandardOpenOption.APPEND);
         	
             for (Part requestPart : request.getParts()) {
-        		IOUtil.copyStream2Stream(requestPart.getInputStream(), localFileStream, requestPart.getInputStream().available());
+        		IOUtils.copy(requestPart.getInputStream(), localFileStream);
 			}
             
             localFileStream.close();
