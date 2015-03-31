@@ -124,9 +124,10 @@ public class ChatServer {
 
         	try {
             	String body = "";
-            	while(request.getReader().ready()) {
-            		body += request.getReader().readLine();
-            	}
+                String line;
+                while ((line = request.getReader().readLine()) != null) {
+            		body += line;
+    			}
             	final JSONObject jsonBody = toJson(body);
 	        	final double longitude = Double.valueOf(String.valueOf(jsonBody.get("lon")));
 	        	final double latitude = Double.valueOf(String.valueOf(jsonBody.get("lat")));
@@ -154,12 +155,12 @@ public class ChatServer {
     public static class MessageServlet extends BaseServlet {
         @Override
         protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {        	super.doPost(request, response);
-        	
 
         	String body = "";
-        	while(request.getReader().ready()) {
-        		body += request.getReader().readLine();
-        	}
+            String line;
+            while ((line = request.getReader().readLine()) != null) {
+        		body += line;
+			}
         	final JSONObject jsonBody = toJson(body);
         	final Message message = toMessage(jsonBody);
         	mWorld.publish(message.getLocation(), message.getPublisher(), message.getMessage());
