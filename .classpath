@@ -35,5 +35,7 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/unfolding.0.9.6.jar"/>
+	<classpathentry kind="lib" path="lib/prevayler-core-2.6.jar" sourcepath="lib/prevayler-core-2.6-sources.jar"/>
+	<classpathentry kind="lib" path="lib/prevayler-factory-2.6.jar" sourcepath="lib/prevayler-factory-2.6-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

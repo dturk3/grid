@@ -27,6 +27,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.collect.Lists;
+import com.grid.auth.Account;
+import com.grid.auth.AuthService;
+import com.grid.auth.Utils;
 import com.grid.structs.geo.Point2D;
 import com.grid.structs.models.Environment;
 import com.grid.structs.models.Message;
@@ -35,9 +38,11 @@ import com.grid.structs.models.World;
 
 public class ChatServer {
 	private static World mWorld;
+	private static AuthService mAuthService;
 
     public static void main(String[] args) throws Exception {
     	mWorld = new World();
+    	mAuthService = new AuthService();
         final Server server = new Server(80);
         
         final ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -46,7 +51,11 @@ public class ChatServer {
         servletHandler.addServlet(MessageServlet.class, "/messages");
         servletHandler.addServlet(FeedServlet.class, "/feeds");
         servletHandler.addServlet(NameServlet.class, "/names");
-        
+        servletHandler.addServlet(SignupServlet.class, "/signup");
+        servletHandler.addServlet(SigninServlet.class, "/signin");
+        servletHandler.addServlet(ForgotPasswordServlet.class, "/forgotpass");
+        servletHandler.addServlet(ChangePasswordServlet.class, "/changepass");
+
         final ServletHolder fileUploadServletHolder = new ServletHolder(new UploadServlet());
         fileUploadServletHolder.getRegistration().setMultipartConfig(new MultipartConfigElement("image/png"));
         servletHandler.addServlet(fileUploadServletHolder, "/upload");
@@ -209,4 +218,191 @@ public class ChatServer {
             response.getWriter().println(jsonResponse);
         }
     }
+    
+    @SuppressWarnings("serial")
+    public static class SignupServlet extends BaseServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        	super.doPost(request, response);
+
+        	String body = "";
+            String line;
+            while ((line = request.getReader().readLine()) != null) {
+        		body += line;
+			}
+        	final JSONObject jsonBody = toJson(body);
+        	
+        	try {
+	        	final String username = jsonBody.getString("username");
+	        	final String password = jsonBody.getString("password");
+	        	final String email = jsonBody.getString("email");
+
+	        	validate(username, password, email);
+	        	
+	        	final Account createdAccount = mAuthService.createAccount(username, email, password);
+	        	response.setStatus(HttpServletResponse.SC_CREATED);
+	        	response.getWriter().println("{\"username\": \"" + createdAccount.getUsername() + "\"}");
+        	}
+        	catch (JSONException e) {
+				throw new IllegalArgumentException(e);
+			}
+        	catch (IllegalStateException e) {
+	        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        	response.getWriter().println("{\"error\": \"" + e.getMessage() + "\"}");
+        	}
+        }
+        
+        private void validate(String username, String password, String email) {
+        	final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789_";
+        	
+        	if (username.length() < 4 || username.length() > 12) {
+        		throw new IllegalStateException("Username must be 4-12 letters long.");
+        	}
+        	if (containsInvalidChars(username, VALID_CHARS)) {
+        		throw new IllegalStateException("Username can only contain letters, numbers, underscore.");
+        	}
+        	
+        	if (password.length() < 4) {
+        		throw new IllegalStateException("Password must be at least 4 letters long.");
+        	}
+        	if (containsInvalidChars(password, VALID_CHARS)) {
+        		throw new IllegalStateException("Password can only contain letters, numbers, underscore.");
+        	}
+        	
+        	if (password.length() < 4) {
+        		throw new IllegalStateException("Password must be at least 4 letters long.");
+        	}
+        	
+        	if (!Utils.isValidEmail(email)) {
+        		throw new IllegalStateException("Email is not valid.");
+        	}
+        }
+        
+        private boolean containsInvalidChars(String string, String benchmark) {
+        	for (char stringChar : string.toCharArray()) {
+				if (!benchmark.contains(String.valueOf(stringChar).toLowerCase())) {
+					return false;
+				}
+			}
+        	return true;
+        }
+    }
+    
+    @SuppressWarnings("serial")
+    public static class SigninServlet extends BaseServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        	super.doPost(request, response);
+
+        	String body = "";
+            String line;
+            while ((line = request.getReader().readLine()) != null) {
+        		body += line;
+			}
+        	final JSONObject jsonBody = toJson(body);
+        	
+        	try {
+	        	final String username = jsonBody.getString("username");
+	        	final String password = jsonBody.getString("password");
+	        	mAuthService.authenticate(username, password);
+	        	response.setStatus(HttpServletResponse.SC_OK);
+        	}
+        	catch (JSONException e) {
+				throw new IllegalArgumentException(e);
+			}
+        	catch (IllegalStateException e) {
+	        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        	}
+        }
+    }
+
+    @SuppressWarnings("serial")
+    public static class ForgotPasswordServlet extends BaseServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        	super.doPost(request, response);
+
+        	String body = "";
+            String line;
+            while ((line = request.getReader().readLine()) != null) {
+        		body += line;
+			}
+        	final JSONObject jsonBody = toJson(body);
+        	
+        	try {
+	        	final String email = jsonBody.getString("email");
+	        	final String resetToken = mAuthService.requestPasswordChange(email);
+	        	response.setStatus(HttpServletResponse.SC_OK);
+	        	response.getWriter().println("{\"token\": \"" + resetToken + "\"}");
+        	}
+        	catch (JSONException e) {
+				throw new IllegalArgumentException(e);
+			}
+        	catch (IllegalStateException e) {
+	        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        	response.getWriter().println("{\"error\": \"" + e.getMessage() + "\"}");
+	        	
+        	} catch (Exception e) {
+	        	response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        	response.getWriter().println("{\"error\": \"" + e.getMessage() + "\"}");
+			}
+        }
+    }
+    
+    @SuppressWarnings("serial")
+    public static class ChangePasswordServlet extends BaseServlet {
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        	super.doPost(request, response);
+
+        	String body = "";
+            String line;
+            while ((line = request.getReader().readLine()) != null) {
+        		body += line;
+			}
+        	final JSONObject jsonBody = toJson(body);
+        	
+        	try {
+	        	final String token = jsonBody.getString("token");
+	        	final String password = jsonBody.getString("password");
+
+	        	validate(password);
+	        	
+	        	mAuthService.changePassword(token, password);
+	        	response.setStatus(HttpServletResponse.SC_OK);
+        	}
+        	catch (JSONException e) {
+				throw new IllegalArgumentException(e);
+			}
+        	catch (IllegalStateException e) {
+	        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	        	response.getWriter().println("{\"error\": \"" + e.getMessage() + "\"}");
+	        	
+        	} catch (Exception e) {
+	        	response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        	response.getWriter().println("{\"error\": \"" + e.getMessage() + "\"}");
+			}
+        }
+        
+        private void validate(String password) {
+        	final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789_";
+        	
+        	if (password.length() < 4) {
+        		throw new IllegalStateException("Password must be at least 4 letters long.");
+        	}
+        	if (containsInvalidChars(password, VALID_CHARS)) {
+        		throw new IllegalStateException("Password can only contain letters, numbers, underscore.");
+        	}
+        }
+        
+        private boolean containsInvalidChars(String string, String benchmark) {
+        	for (char stringChar : string.toCharArray()) {
+				if (!benchmark.contains(String.valueOf(stringChar).toLowerCase())) {
+					return false;
+				}
+			}
+        	return true;
+        }
+    }
+
 }
